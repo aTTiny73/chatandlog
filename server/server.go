@@ -15,17 +15,23 @@ import (
 
 // handleConnections heandles a tcp connection from client
 func handleConnection(connection net.Conn, log *logs.MultipleLog) {
+
 	log.Infof("%s just Connected. \n", connection.RemoteAddr().String())
+
 	for {
 		netData, err := bufio.NewReader(connection).ReadString('\n')
 		if err != nil {
 			log.Error("Listening of:" + connection.RemoteAddr().String() + " stopped.")
 			return
 		}
+
 		fmt.Printf("%s : %s \n", connection.RemoteAddr().String(), strings.TrimSpace(string(netData)))
+
 		connection.Write([]byte(string("Server: Message recived \n")))
+
+		defer connection.Close()
 	}
-	//defer c.Close()
+
 }
 
 func main() {
@@ -38,9 +44,9 @@ func main() {
 	stdlog := logs.NewStdLogger()
 	defer stdlog.Close()
 
-	//databaseLog := logs.NewDataBaseLog(logs.DatabaseConfiguration())
+	databaseLog := logs.NewDataBaseLog(logs.DatabaseConfiguration())
 
-	log := logs.NewCustomLogger(false, fileLog1, stdlog, syslog)
+	log := logs.NewCustomLogger(false, fileLog1, stdlog, syslog, databaseLog)
 
 	arguments := os.Args
 	if len(arguments) == 1 {
@@ -54,6 +60,7 @@ func main() {
 		log.Error(err)
 		return
 	}
+
 	defer listener.Close()
 
 	log.Info("Ready to listen...")
@@ -64,6 +71,7 @@ func main() {
 			log.Error(err)
 			return
 		}
+
 		//Starts a new goroutine each time it has to serve a TCP client.
 		go handleConnection(conn, log)
 	}
