@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"log/syslog"
 	"net"
@@ -25,7 +24,7 @@ func handleConnection(connection net.Conn, log *logs.MultipleLog) {
 			return
 		}
 
-		fmt.Printf("%s : %s \n", connection.RemoteAddr().String(), strings.TrimSpace(string(netData)))
+		log.Info(connection.RemoteAddr().String() + " Says : " + strings.TrimSpace(string(netData)))
 
 		connection.Write([]byte(string("Server: Message recived \n")))
 
@@ -44,9 +43,9 @@ func main() {
 	stdlog := logs.NewStdLogger()
 	defer stdlog.Close()
 
-	databaseLog := logs.NewDataBaseLog(logs.DatabaseConfiguration())
+	//databaseLog := logs.NewDataBaseLog(logs.DatabaseConfiguration())
 
-	log := logs.NewCustomLogger(false, fileLog1, stdlog, syslog, databaseLog)
+	log := logs.NewCustomLogger(false, fileLog1, stdlog, syslog /*,databaseLog*/)
 
 	arguments := os.Args
 	if len(arguments) == 1 {
