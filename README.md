@@ -1,5 +1,6 @@
 # chatandlog
-TCP Chat box (client -> server) and logging functionality
+TCP Chat box (client -> server) and logging functionality.
+For database logging take a look at 'multilogger' repo.
 
   ## Cloning
 ```
